@@ -1,0 +1,24 @@
+Dataset link-
+https://www.kaggle.com/datasets/nilimajauhari/glassdoor-analyze-gender-pay-gap 
+
+Dataset Description-
+The data set has been taken from glassdoor and focuses on income for various job titles based on gender. As there have been many studies showcasing that women are paid less than men for the same job titles, this data set will be helpful in identifying the depth of the gender-based pay gap. The features of the data set are:
+Content
+Job Title, Gender, Age, PerfEval, Education, Dept, Seniority, Base Pay, Bonus
+
+Questions-
+Does the data show a gender pay gap in terms of average total compensation?
+Is there a difference in average base pay across different job titles?
+Does education level affect total compensation for each gender?
+How does seniority impact total compensation, and does it vary by gender?
+Are there noticeable differences in bonuses between genders for specific job titles?
+
+Answers-
+Yes, the chart shows that males have a slightly higher average total compensation than females, indicating a potential gender pay gap where males earn more on average than females.
+Yes, the box plot reveals that base pay varies by job title, with certain roles like Software Engineer and Financial Analyst having higher median base pay compared to roles like Warehouse Associate and Driver. This suggests pay differences are strongly influenced by job type.
+The chart shows that total compensation generally increases with higher education levels for both genders. However, within each education level, males tend to earn slightly more than females, suggesting that education alone does not close the gender pay gap.
+The line plot shows that total compensation increases with seniority for both genders. However, males consistently have slightly higher compensation at each seniority level, indicating that even as experience grows, a gender pay gap persists.
+The treemap shows that bonuses vary by both job title and gender, with males receiving higher bonuses in several roles like Software Engineer and Financial Analyst. This indicates that bonuses might contribute to the gender pay gap, especially in higher-paying roles where males tend to receive larger bonuses.
+
+
+
