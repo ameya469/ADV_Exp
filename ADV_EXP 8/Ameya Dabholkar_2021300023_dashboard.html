@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AQI Dataset Visualizations</title>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+  <h2>1. AQI Value Distribution (Histogram)</h2>
+  <div id="aqiValueDistribution" style="width: 100%; height: 500px;"></div>
+
+  <h2>2. AQI Category Distribution (Bar Chart)</h2>
+  <div id="aqiCategoryDistribution" style="width: 100%; height: 500px;"></div>
+
+  <h2>3. Average AQI by Country (Bar Chart)</h2>
+  <div id="avgAqiByCountry" style="width: 100%; height: 500px;"></div>
+
+  <h2>4. PM2.5 AQI Value Distribution (Histogram)</h2>
+  <div id="pm25AqiDistribution" style="width: 100%; height: 500px;"></div>
+
+  <h2>5. CO AQI vs Ozone AQI (Scatter Plot)</h2>
+  <div id="coVsOzoneScatter" style="width: 100%; height: 500px;"></div>
+
+  <script>
+    // Load CSV data
+    d3.csv("https://raw.githubusercontent.com/Harshal4399/ADV/refs/heads/main/Exp%208.%20Environment%20Dataset/air_pollution.csv?token=GHSAT0AAAAAAC2DK7LG4565TWRJGL6SOKGSZZQJVVA").then(data => {
+      data.forEach(d => {
+        d["AQI Value"] = +d["AQI Value"];
+        d["CO AQI Value"] = +d["CO AQI Value"];
+        d["Ozone AQI Value"] = +d["Ozone AQI Value"];
+        d["NO2 AQI Value"] = +d["NO2 AQI Value"];
+        d["PM2.5 AQI Value"] = +d["PM2.5 AQI Value"];
+      });
+
+      // Visualization 1: AQI Value Distribution (Histogram)
+      const aqiDiv = d3.select("#aqiValueDistribution");
+      const aqiWidth = aqiDiv.node().getBoundingClientRect().width;
+      const aqiHeight = 500;
+      const aqiMargin = {top: 20, right: 30, bottom: 40, left: 40};
+
+      const xAqi = d3.scaleLinear()
+        .domain(d3.extent(data, d => d["AQI Value"]))
+        .nice()
+        .range([aqiMargin.left, aqiWidth - aqiMargin.right]);
+
+      const histogram = d3.histogram()
+        .value(d => d["AQI Value"])
+        .domain(xAqi.domain())
+        .thresholds(xAqi.ticks(20));
+
+      const bins = histogram(data);
+
+      const yAqi = d3.scaleLinear()
+        .domain([0, d3.max(bins, d => d.length)])
+        .nice()
+        .range([aqiHeight - aqiMargin.bottom, aqiMargin.top]);
+
+      const svgAqi = aqiDiv.append("svg")
+        .attr("width", aqiWidth)
+        .attr("height", aqiHeight);
+
+      svgAqi.append("g")
+        .selectAll("rect")
+        .data(bins)
+        .join("rect")
+          .attr("x", d => xAqi(d.x0) + 1)
+          .attr("y", d => yAqi(d.length))
+          .attr("width", d => xAqi(d.x1) - xAqi(d.x0) - 1)
+          .attr("height", d => yAqi(0) - yAqi(d.length))
+          .attr("fill", "steelblue");
+
+      svgAqi.append("g")
+        .attr("transform", `translate(0,${aqiHeight - aqiMargin.bottom})`)
+        .call(d3.axisBottom(xAqi))
+        .append("text")
+          .attr("fill", "#000")
+          .attr("x", aqiWidth - aqiMargin.right)
+          .attr("y", -4)
+          .attr("text-anchor", "end")
+          .text("AQI Value");
+
+      svgAqi.append("g")
+        .attr("transform", `translate(${aqiMargin.left},0)`)
+        .call(d3.axisLeft(yAqi))
+        .append("text")
+          .attr("fill", "#000")
+          .attr("x", 4)
+          .attr("y", aqiMargin.top)
+          .attr("dy", "-1em")
+          .attr("text-anchor", "start")
+          .text("Frequency");
+
+      // Visualization 2: AQI Category Distribution (Bar Chart)
+      const categoryData = d3.rollups(data, v => v.length, d => d["AQI Category"]);
+      const catDiv = d3.select("#aqiCategoryDistribution");
+      const catWidth = catDiv.node().getBoundingClientRect().width;
+      const catHeight = 500;
+
+      const xCat = d3.scaleBand()
+        .domain(categoryData.map(d => d[0]))
+        .range([40, catWidth - 20])
+        .padding(0.1);
+
+      const yCat = d3.scaleLinear()
+        .domain([0, d3.max(categoryData, d => d[1])])
+        .nice()
+        .range([catHeight - 40, 20]);
+
+      const svgCat = catDiv.append("svg")
+        .attr("width", catWidth)
+        .attr("height", catHeight);
+
+      svgCat.append("g")
+        .selectAll("rect")
+        .data(categoryData)
+        .join("rect")
+          .attr("x", d => xCat(d[0]))
+          .attr("y", d => yCat(d[1]))
+          .attr("height", d => yCat(0) - yCat(d[1]))
+          .attr("width", xCat.bandwidth())
+          .attr("fill", "teal");
+
+      svgCat.append("g")
+        .attr("transform", `translate(0,${catHeight - 40})`)
+        .call(d3.axisBottom(xCat));
+
+      svgCat.append("g")
+        .attr("transform", `translate(40,0)`)
+        .call(d3.axisLeft(yCat));
+
+      // Visualization 3: Average AQI by Country (Bar Chart)
+      const avgAqiData = Array.from(d3.rollup(data, v => d3.mean(v, d => d["AQI Value"]), d => d.Country));
+      const avgAqiDiv = d3.select("#avgAqiByCountry");
+      const avgAqiWidth = avgAqiDiv.node().getBoundingClientRect().width;
+      const avgAqiHeight = 500;
+
+      const xAvgAqi = d3.scaleBand()
+        .domain(avgAqiData.map(d => d[0]))
+        .range([40, avgAqiWidth - 20])
+        .padding(0.1);
+
+      const yAvgAqi = d3.scaleLinear()
+        .domain([0, d3.max(avgAqiData, d => d[1])])
+        .nice()
+        .range([avgAqiHeight - 40, 20]);
+
+      const svgAvgAqi = avgAqiDiv.append("svg")
+        .attr("width", avgAqiWidth)
+        .attr("height", avgAqiHeight);
+
+      svgAvgAqi.append("g")
+        .selectAll("rect")
+        .data(avgAqiData)
+        .join("rect")
+          .attr("x", d => xAvgAqi(d[0]))
+          .attr("y", d => yAvgAqi(d[1]))
+          .attr("height", d => yAvgAqi(0) - yAvgAqi(d[1]))
+          .attr("width", xAvgAqi.bandwidth())
+          .attr("fill", "purple");
+
+      svgAvgAqi.append("g")
+        .attr("transform", `translate(0,${avgAqiHeight - 40})`)
+        .call(d3.axisBottom(xAvgAqi));
+
+      svgAvgAqi.append("g")
+        .attr("transform", `translate(40,0)`)
+        .call(d3.axisLeft(yAvgAqi));
+
+      // Visualization 4: PM2.5 AQI Value Distribution (Histogram)
+      const pm25Div = d3.select("#pm25AqiDistribution");
+      const pm25Width = pm25Div.node().getBoundingClientRect().width;
+      const pm25Height = 500;
+
+      const xPm25 = d3.scaleLinear()
+        .domain(d3.extent(data, d => d["PM2.5 AQI Value"]))
+        .nice()
+        .range([40, pm25Width - 20]);
+
+      const pm25Hist = d3.histogram()
+        .value(d => d["PM2.5 AQI Value"])
+        .domain(xPm25.domain())
+        .thresholds(xPm25.ticks(20));
+
+      const pm25Bins = pm25Hist(data);
+
+      const yPm25 = d3.scaleLinear()
+        .domain([0, d3.max(pm25Bins, d => d.length)])
+        .nice()
+        .range([pm25Height - 40, 20]);
+
+      const svgPm25 = pm25Div.append("svg")
+        .attr("width", pm25Width)
+        .attr("height", pm25Height);
+
+      svgPm25.append("g")
+        .selectAll("rect")
+        .data(pm25Bins)
+        .join("rect")
+          .attr("x", d => xPm25(d.x0) + 1)
+          .attr("y", d => yPm25(d.length))
+          .attr("width", d => xPm25(d.x1) - xPm25(d.x0) - 1)
+          .attr("height", d => yPm25(0) - yPm25(d.length))
+          .attr("fill", "orange");
+
+      svgPm25.append("g")
+        .attr("transform", `translate(0,${pm25Height - 40})`)
+        .call(d3.axisBottom(xPm25));
+
+      svgPm25.append("g")
+        .attr("transform", `translate(40,0)`)
+        .call(d3.axisLeft(yPm25));
+
+      // Visualization 5: CO AQI vs Ozone AQI (Scatter Plot)
+      const coOzoneDiv = d3.select("#coVsOzoneScatter");
+      const coOzoneWidth = coOzoneDiv.node().getBoundingClientRect().width;
+      const coOzoneHeight = 500;
+
+      const xCoOzone = d3.scaleLinear()
+        .domain(d3.extent(data, d => d["CO AQI Value"]))
+        .nice()
+        .range([40, coOzoneWidth - 20]);
+
+      const yCoOzone = d3.scaleLinear()
+        .domain(d3.extent(data, d => d["Ozone AQI Value"]))
+        .nice()
+        .range([coOzoneHeight - 40, 20]);
+
+      const svgCoOzone = coOzoneDiv.append("svg")
+        .attr("width", coOzoneWidth)
+        .attr("height", coOzoneHeight);
+
+      svgCoOzone.append("g")
+        .selectAll("circle")
+        .data(data)
+        .join("circle")
+          .attr("cx", d => xCoOzone(d["CO AQI Value"]))
+          .attr("cy", d => yCoOzone(d["Ozone AQI Value"]))
+          .attr("r", 2)
+          .attr("fill", "red");
+
+      svgCoOzone.append("g")
+        .attr("transform", `translate(0,${coOzoneHeight - 40})`)
+        .call(d3.axisBottom(xCoOzone))
+        .append("text")
+          .attr("fill", "#000")
+          .attr("x", coOzoneWidth - 20)
+          .attr("y", -4)
+          .attr("text-anchor", "end")
+          .text("CO AQI Value");
+
+      svgCoOzone.append("g")
+        .attr("transform", `translate(40,0)`)
+        .call(d3.axisLeft(yCoOzone))
+        .append("text")
+          .attr("fill", "#000")
+          .attr("x", 4)
+          .attr("y", 20)
+          .attr("dy", "-1em")
+          .attr("text-anchor", "start")
+          .text("Ozone AQI Value");
+    });
+  </script>
+</body>
+</html>

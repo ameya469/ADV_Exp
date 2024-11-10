@@ -1,0 +1,32 @@
+Dataset link-
+https://www.kaggle.com/datasets/hasibalmuzdadid/global-air-pollution-dataset 
+
+Dataset Description-
+Air Pollution is contamination of the indoor or outdoor environment by any chemical, physical or biological agent that modifies the natural characteristics of the atmosphere. Household combustion devices, motor vehicles, industrial facilities and forest fires are common sources of air pollution. Pollutants of major public health concern include particulate matter, carbon monoxide, ozone, nitrogen dioxide and sulfur dioxide. Outdoor and indoor air pollution cause respiratory and other diseases and are important sources of morbidity and mortality.
+Content
+Country : Name of the country
+City : Name of the city
+AQI Value : Overall AQI value of the city
+AQI Category : Overall AQI category of the city
+CO AQI Value : AQI value of Carbon Monoxide of the city
+CO AQI Category : AQI category of Carbon Monoxide of the city
+Ozone AQI Value : AQI value of Ozone of the city
+Ozone AQI Category : AQI category of Ozone of the city
+NO2 AQI Value : AQI value of Nitrogen Dioxide of the city
+NO2 AQI Category : AQI category of Nitrogen Dioxide of the city
+PM2.5 AQI Value : AQI value of Particulate Matter with a diameter of 2.5 micrometers or less of the city
+PM2.5 AQI Category : AQI category of Particulate Matter with a diameter of 2.5 micrometers or less of the city
+
+Questions-
+What does the distribution of AQI values indicate about general air quality levels?
+What can we infer about air quality categories based on this distribution?
+Are there any countries with notably higher average AQI levels, and what might this indicate?
+What does the PM2.5 AQI distribution reveal about fine particulate pollution?
+Is there a visible relationship between CO AQI and Ozone AQI values?
+
+Answers-
+The histogram shows that the majority of AQI values fall between 0 and 50, suggesting that most locations in the dataset experience air quality levels within the "Good" range. This indicates relatively low levels of air pollution across many of the measured locations.
+The bar chart shows that "Good" and "Moderate" AQI levels are the most common categories, while "Unhealthy" and worse categories are much less frequent. This suggests that most areas have acceptable air quality, with fewer occurrences of severe pollution levels.
+The bar chart shows that some countries have significantly higher average AQI values than others, which may indicate poorer air quality or more severe pollution issues in those regions compared to countries with lower average AQI levels.
+The histogram for PM2.5 AQI values shows a concentration at lower levels, primarily under 50, which suggests that fine particulate pollution is generally at lower, safer levels in many areas. However, there are occasional spikes indicating higher PM2.5 levels in certain locations.
+The scatter plot shows no strong linear relationship between CO AQI and Ozone AQI values, with most data points clustered at lower AQI levels for both pollutants. This suggests that high levels of CO do not necessarily correspond with high levels of ozone and vice versa, indicating that these pollutants may have different sources or influencing factors.
